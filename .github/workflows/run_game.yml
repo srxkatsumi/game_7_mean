@@ -28,6 +28,10 @@ jobs:
           sleep 5
         shell: bash
         
+      - name: Install Ngrok
+        if: matrix.os == 'windows-latest'
+        run: choco install ngrok  
+        
       - name: Set up Ngrok
         run: |
           ngrok authtoken 2hYWqvBz1LfR9E14LG6ELirHgqq_2ZDkKQBD3V9GiMafKqHZu
