@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game 7 Mean</title>
+</head>
+<body>
+    <h1>Game 7 Mean</h1>
+    <div id="game-container">
+        <p>Loading game...</p>
+    </div>
+
+    <script>
+        // Função para fazer uma requisição AJAX para o Flask backend e obter a resposta
+        function loadGame() {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                    if (xhr.status == 200) {
+                        document.getElementById("game-container").innerHTML = xhr.responseText;
+                    } else {
+                        document.getElementById("game-container").innerHTML = "Error loading game.";
+                    }
+                }
+            };
+            xhr.open("GET", "/play_game", true);
+            xhr.send();
+        }
+
+        // Carregar o jogo assim que a página for carregada
+        window.onload = loadGame;
+    </script>
+</body>
+</html>
