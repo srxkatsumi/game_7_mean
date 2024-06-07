@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7 e Meio</title>
+</head>
+<body>
+    <h1>Resultado do Jogo</h1>
+    <pre id="game-result"></pre>
+    <script>
+        fetch('/game_result.txt')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('game-result').innerText = data;
+            });
+    </script>
+</body>
+</html>
