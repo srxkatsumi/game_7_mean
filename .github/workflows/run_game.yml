@@ -1,26 +1,56 @@
-name: Run 7 e mean
+name: Run game
 
 on:
   push:
     branches:
       - main
-      
+  pull_request:
+    branches:
+      - main
+
 jobs:
-  run_game:
-    runs-on: windows-latest
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flash
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
-    - name: Run game
-      run: python docs/app.py
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install Flask
 
-    - name: Open browser
-      if: success()
-      run: start http://127.0.0.1:5000
+      - name: Run Flask app
+        run: |
+          python docs/app.py &
+          sleep 5 # Espera 5 segundos para garantir que o servidor Flask esteja funcionando
+
+      - name: Start Ngrok
+        if: ${{ matrix.os == 'ubuntu-latest' }} # Inicia o Ngrok apenas em um sistema operacional
+        run: |
+          wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -O ngrok.zip
+          unzip ngrok.zip
+          ./ngrok http 5000 &
+
+      - name: Get Ngrok Tunnel URL
+        if: ${{ matrix.os == 'ubuntu-latest' }} # Obtém o URL do túnel Ngrok apenas em um sistema operacional
+        id: ngrok
+        run: |
+          sleep 10 # Espera 10 segundos para garantir que o túnel Ngrok esteja pronto
+          echo "::set-output name=url::$(curl -sS http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')"
+
+      - name: Open browser
+        if: success() && matrix.os == 'ubuntu-latest' # Abre o navegador apenas se for um sucesso e no Ubuntu
+        run: |
+          start ${{ steps.ngrok.outputs.url }}
 
