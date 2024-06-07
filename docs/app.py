@@ -3,6 +3,15 @@ import random
 
 app = Flask(__name__)
 
+@app.route('/')
+def index():
+    return render_template('game.html')
+
+@app.route('/play_game')
+def play_game():
+    # Aqui você colocaria o código Python para gerar a página do jogo dinamicamente
+    return "<p>Game content goes here.</p>"
+
 def card_value(card):
     if card in ['Jack', 'Queen', 'King']:
         return 0.5
