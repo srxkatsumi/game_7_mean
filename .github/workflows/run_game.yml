@@ -27,13 +27,17 @@ jobs:
           python docs/app.py &
           sleep 5
         shell: bash
+        
+      - name: Download Ngrok
+        run: |
+          Invoke-WebRequest -Uri 'https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip' -OutFile 'ngrok.zip'
+          Expand-Archive -Path 'ngrok.zip' -DestinationPath '.' -Force
+        shell: pwsh
 
       - name: Start Ngrok
         run: |
-          wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -O ngrok.zip
-          unzip ngrok.zip
-          ./ngrok http 5000 &
-        shell: bash
+          .\ngrok.exe http 5000
+        shell: pwsh
 
       - name: Get Ngrok Tunnel URL
         id: ngrok
