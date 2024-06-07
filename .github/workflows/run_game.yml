@@ -24,6 +24,9 @@ jobs:
     - name: Navigate to docs directory
       run: cd docs
       
+    - name: List files in docs directory
+      run: ls
+      
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
