@@ -22,4 +22,4 @@ jobs:
         
     - name: Run the game
       run: |
-        python app.py
+        python docs/app.py
