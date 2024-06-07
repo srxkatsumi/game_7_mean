@@ -12,24 +12,25 @@
     </div>
 
     <script>
-        // Função para fazer uma requisição AJAX para o Flask backend e obter a resposta
-        function loadGame() {
+        // Função para fazer uma requisição AJAX para o backend Python e obter a resposta
+        function playGame() {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     if (xhr.status == 200) {
-                        document.getElementById("game-container").innerHTML = xhr.responseText;
+                        var response = JSON.parse(xhr.responseText);
+                        document.getElementById("game-container").innerHTML = response.message;
                     } else {
-                        document.getElementById("game-container").innerHTML = "Error loading game.";
+                        document.getElementById("game-container").innerHTML = "Error playing game.";
                     }
                 }
             };
-            xhr.open("GET", "/play_game", true);
+            xhr.open("GET", "/play_game?chips=300&bet=50", true);
             xhr.send();
         }
 
         // Carregar o jogo assim que a página for carregada
-        window.onload = loadGame;
+        window.onload = playGame;
     </script>
 </body>
 </html>
