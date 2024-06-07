@@ -22,5 +22,5 @@ jobs:
 
     - name: Open browser
       if: success()
-      run: xdg-open http://127.0.0.1:5000
+      run: start http://127.0.0.1:5000
 
