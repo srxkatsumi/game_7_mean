@@ -24,4 +24,4 @@ jobs:
         pip install -r requirements.txt
         
     - name: Run game
-      run: python app.py
+      run: python docs/app.py
