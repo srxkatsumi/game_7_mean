@@ -27,22 +27,29 @@ jobs:
           python docs/app.py &
           sleep 5
         shell: bash
+        
+      - name: Set up Ngrok
+        run: |
+          ngrok authtoken 2hYWqvBz1LfR9E14LG6ELirHgqq_2ZDkKQBD3V9GiMafKqHZu
 
-      - name: Download and extract Ngrok
+      - name: Download Ngrok
         run: |
           Invoke-WebRequest -Uri 'https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip' -OutFile 'ngrok.zip'
           Expand-Archive -Path 'ngrok.zip' -DestinationPath '.' -Force
-        shell: powershell
+        shell: pwsh
+
+      - name: Start Ngrok
+        run: |
+          .\ngrok.exe http 5000 &
+        shell: pwsh
 
       - name: Get Ngrok Tunnel URL
         id: ngrok
         run: |
-          .\ngrok.exe http 5000 &
           sleep 10
-          $url = Invoke-RestMethod http://localhost:4040/api/tunnels | Select-Object -ExpandProperty tunnels | Where-Object { $_.proto -eq "http" } | Select-Object -ExpandProperty public_url
-          echo "::set-output name=url::$url"
-        shell: powershell
+          echo "::set-output name=url::$(curl -sS http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')"
+        shell: pwsh
 
       - name: Open browser
         if: success()
-        run: start "" "${{ steps.ngrok.outputs.url }}/game.html"
+        run: start "" "docs/game.html"
