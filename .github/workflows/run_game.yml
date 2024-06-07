@@ -7,10 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
+    runs-on: windows-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -26,14 +23,12 @@ jobs:
           pip install Flask
 
       - name: Run Flask app
-        if: matrix.os == 'ubuntu-latest'
         run: |
           python docs/app.py &
           sleep 5
         shell: bash
 
       - name: Start Ngrok
-        if: matrix.os == 'ubuntu-latest'
         run: |
           wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -O ngrok.zip
           unzip ngrok.zip
@@ -41,7 +36,6 @@ jobs:
         shell: bash
 
       - name: Get Ngrok Tunnel URL
-        if: matrix.os == 'ubuntu-latest'
         id: ngrok
         run: |
           sleep 10
@@ -50,9 +44,4 @@ jobs:
 
       - name: Open browser
         if: success()
-        run: |
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            start "" "docs/game.html"
-          elif [[ "$RUNNER_OS" == "Linux" ]]; then
-            xdg-open "docs/game.html"
-          fi
+        run: start "" "docs/game.html"
