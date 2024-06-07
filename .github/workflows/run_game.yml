@@ -1,29 +1,24 @@
-name: Run game
+name: Run Game
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
-
+        os: [ubuntu-latest, windows-latest]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: 3.8
 
       - name: Install dependencies
         run: |
@@ -31,26 +26,39 @@ jobs:
           pip install Flask
 
       - name: Run Flask app
+        if: matrix.os == 'ubuntu-latest'
         run: |
           python docs/app.py &
-          sleep 5 # Espera 5 segundos para garantir que o servidor Flask esteja funcionando
+          sleep 5
+        shell: bash
 
       - name: Start Ngrok
-        if: ${{ matrix.os == 'ubuntu-latest' }} # Inicia o Ngrok apenas em um sistema operacional
+        if: matrix.os == 'ubuntu-latest'
         run: |
           wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -O ngrok.zip
           unzip ngrok.zip
           ./ngrok http 5000 &
+        shell: bash
 
       - name: Get Ngrok Tunnel URL
-        if: ${{ matrix.os == 'ubuntu-latest' }} # Obtém o URL do túnel Ngrok apenas em um sistema operacional
+        if: matrix.os == 'ubuntu-latest'
         id: ngrok
         run: |
-          sleep 10 # Espera 10 segundos para garantir que o túnel Ngrok esteja pronto
+          sleep 10
           echo "::set-output name=url::$(curl -sS http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')"
+        shell: bash
 
       - name: Open browser
-        if: success() && matrix.os == 'ubuntu-latest' # Abre o navegador apenas se for um sucesso e no Ubuntu
+        if: success() && matrix.os == 'ubuntu-latest'
         run: |
-          start ${{ steps.ngrok.outputs.url }}
+          xdg-open ${{ steps.ngrok.outputs.url }}
 
+      - name: Install dependencies
+        if: matrix.os == 'windows-latest'
+        run: |
+          python -m pip install --upgrade pip
+          pip install Flask
+
+      - name: Run Python app
+        if: matrix.os == 'windows-latest'
+        run: python docs/app.py
