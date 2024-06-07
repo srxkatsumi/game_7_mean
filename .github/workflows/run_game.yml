@@ -49,12 +49,10 @@ jobs:
         shell: bash
 
       - name: Open browser
-        if: success() && matrix.os == 'ubuntu-latest'
+        if: success()
         run: |
-          xdg-open "${{ steps.ngrok.outputs.url }}"
-        shell: bash
-
-      - name: Open browser
-        if: success() && matrix.os == 'windows-latest'
-        run: |
-          start "" "${{ steps.ngrok.outputs.url }}"
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            start "" "docs/game.html"
+          elif [[ "$RUNNER_OS" == "Linux" ]]; then
+            xdg-open "docs/game.html"
+          fi
