@@ -33,4 +33,4 @@ jobs:
         pip install flask
         
     - name: Run game
-      run: python app.py
+      run: python docs/app.py
