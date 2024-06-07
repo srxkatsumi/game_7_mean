@@ -1,4 +1,4 @@
-name: Run 7 and a Half
+name: Run 7 e mean
 
 on:
   push:
@@ -7,23 +7,24 @@ on:
 
 jobs:
   run_game:
-    runs-on: ubuntu-latest
-
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-
+      
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
-
+        
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install Flask
-
-    - name: Run the game
-      run: |
-        cd docs  # Mudando para o diretório docs
-        python app.py
+        pip install -r requirements.txt
+        
+    - name: Run game
+      run: python app.py
